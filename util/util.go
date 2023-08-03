@@ -1,0 +1,48 @@
+package util
+
+import (
+	"fmt"
+	"net/url"
+	"reflect"
+	"strings"
+)
+
+const (
+	HttpSignatureHeader            string = "X-Signature"
+	HttpResponseHeaderRecipientKey string = "X-Recipient"
+	HttpResponseHeaderRecipient    string = "e9c6bcdd-5a98-45ca-8091-4959ce2f28a8" //use random v4 uuid "hermas"
+)
+
+const (
+	Environment             string = "ENVIRONMENT"
+	SecretKey               string = "SecretKey"
+	DomainWhitelistEnable   string = "DOMAIN_WHITELIST_ENABLE"
+	DomainWhitelistValues   string = "DOMAIN_WHITELISTS"
+	DomainWhiteListAllowAll string = "*"
+	ServerPort              string = "PORT"
+)
+
+const (
+	Production      string = "PRD"
+	Development     string = "DEV"
+	LogLevel        string = "LOG_LEVEL"
+	EnvironmentFile string = ".env"
+	LogFilePath     string = "LOG_FILEPATH"
+	LogSize         string = "LOG_SIZE"
+)
+
+func GetQuery(d interface{}, key string) string {
+	v := reflect.ValueOf(d)
+	t := v.Type()
+	var parts []string
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		structField := t.Field(i)
+		// Get query tag
+		queryTag := structField.Tag.Get("query")
+		queryValue := fmt.Sprintf("%v", field.Interface())
+		part := fmt.Sprintf("%s=%s", queryTag, url.QueryEscape(queryValue))
+		parts = append(parts, part)
+	}
+	return strings.Join(parts, "&")
+}
