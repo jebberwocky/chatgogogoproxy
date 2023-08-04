@@ -14,8 +14,9 @@ import (
 // - Message: Simple message string
 // - Data: Struct or map with response data
 type Response struct {
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Message         string      `json:"message"`
+	Data            interface{} `json:"data"`
+	ChatbotResponse string      `json:"chatbotResponse"`
 }
 
 // CustomError struct
@@ -27,14 +28,6 @@ type CustomError struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Details interface{} `json:"details"` // Single value
-}
-
-// SendSuccess function
-// - Sends JSON success response
-// - Status 200 OK
-// - Message and data payload
-func SendSuccess(c echo.Context, message string, data interface{}) error {
-	return c.JSON(http.StatusOK, Response{Message: message, Data: data})
 }
 
 // SendSuccessObj function
