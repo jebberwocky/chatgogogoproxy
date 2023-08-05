@@ -1,20 +1,22 @@
 package controllers
 
 import (
+	"chatproxy/chatgpt"
 	"chatproxy/models"
 	responses "chatproxy/response"
-	"fmt"
 )
 
 func DefaultHandle(d models.ChatRequest) (responses.Response, error) {
-	return responses.Response{}, nil
+	resp, err := chatgpt.GenerateResponseLegacy(d)
+	return resp, err
 }
 
 func V3Handle(d models.ChatRequest) (responses.Response, error) {
-	return responses.Response{}, nil
+	resp, err := chatgpt.GenerateResponse(d, chatgpt.Model_v3)
+	return resp, err
 }
 
 func V4Handle(d models.ChatRequest) (responses.Response, error) {
-	fmt.Println("v4")
-	return responses.Response{}, nil
+	resp, err := chatgpt.GenerateResponse(d, chatgpt.Model_v4)
+	return resp, err
 }

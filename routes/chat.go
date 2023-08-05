@@ -5,6 +5,7 @@ import (
 	"chatproxy/models"
 	responses "chatproxy/response"
 	validators "chatproxy/validator"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -54,6 +55,7 @@ func v4Handler(c echo.Context) error {
 	var req models.ChatRequest
 	err := c.Bind(&req)
 	if err != nil {
+		fmt.Println(err)
 		return c.String(http.StatusBadRequest, "bad request")
 	}
 	// Validate

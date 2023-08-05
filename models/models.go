@@ -2,5 +2,9 @@ package models
 
 type ChatRequest struct {
 	Input string `json:"input"`
-	ATag  string `json:"atag"`
+	ATag  struct {
+		Pk string `json:"pk"`
+		Mk string `json:"mk"`
+		Mh string `json:"mh"`
+	} `json:"atag"`
 }

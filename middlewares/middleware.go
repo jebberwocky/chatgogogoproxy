@@ -7,11 +7,16 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
+	"github.com/go-resty/resty/v2"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"time"
 )
+
+func RestryOnBeforeRequest(c *resty.Client, req *resty.Request) error {
+	return nil // if its success otherwise return error
+}
 
 // ServerHeader middleware
 // - Called before request handling
@@ -57,13 +62,6 @@ func LoggingMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		entry.Info("Handled request")
 		return next(c)
-
-		/*
-			log.WithFields(log.Fields{
-				"method": c.Request().Method,
-				"uri":    c.Request().RequestURI,
-			}).Info("Handled request")
-			return next(c)*/
 	}
 }
 

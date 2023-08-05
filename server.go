@@ -61,7 +61,7 @@ func main() {
 	// Middleware
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(100)))
 	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	//e.Use(middleware.Recover())
 	e.Use(middlewares.LoggingMiddleware)
 	e.Use(middlewares.ServerHeader)
 	//only auth in production
