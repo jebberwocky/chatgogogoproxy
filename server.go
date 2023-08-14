@@ -64,12 +64,6 @@ func main() {
 	//e.Use(middleware.Recover())
 	e.Use(middlewares.LoggingMiddleware)
 	e.Use(middlewares.ServerHeader)
-	//only auth in production
-	if util.Production == os.Getenv(util.Environment) {
-		key := []byte(util.SecretKey)
-		e.Use(middlewares.ValidateSignatureMiddleware(key))
-	}
-
 	//Domain White List Functionality
 	if viper.GetBool(util.DomainWhitelistEnable) {
 		configCORS(e)

@@ -2,6 +2,7 @@ package chatgpt
 
 import (
 	"chatproxy/chatHistory"
+	"chatproxy/middlewares"
 	"chatproxy/models"
 	responses "chatproxy/response"
 	"encoding/json"
@@ -24,6 +25,8 @@ const (
 
 func GenerateResponseLegacy(d models.ChatRequest) (responses.Response, error) {
 	client := resty.New()
+	client.OnBeforeRequest(middlewares.RestryOnBeforeRequest)
+	client.OnAfterResponse(middlewares.RestryOnAfterResponse)
 	prompt := d.Input
 	resp, err := client.R().
 		SetHeader("Authorization", "Bearer "+apiKey).
@@ -62,13 +65,14 @@ func GenerateResponse(d models.ChatRequest, model string) (responses.Response, e
 	if model == Model_v4 {
 		chatHistory.SetRule(pk, map[string]interface{}{
 			"role":    "system",
-			"content": "Hi can you tell me what is the factorial of 10?"})
+			"content": "你是一个智能聊天助手"})
 	}
 	messages := chatHistory.Set(pk, map[string]interface{}{
 		"role":    "user",
 		"content": d.Input})
 	client := resty.New()
-
+	client.OnBeforeRequest(middlewares.RestryOnBeforeRequest)
+	client.OnAfterResponse(middlewares.RestryOnAfterResponse)
 	resp, err := client.R().
 		SetHeader("Authorization", "Bearer "+apiKey).
 		SetHeader("Content-Type", "application/json").SetBody(
@@ -98,7 +102,7 @@ func GenerateResponse(d models.ChatRequest, model string) (responses.Response, e
 			"role":    "assistant",
 			"content": content})
 		return responses.Response{
-			Message:         "assistant",
+			Message:         "success",
 			ChatbotResponse: content,
 		}, nil
 	}

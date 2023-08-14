@@ -15,6 +15,61 @@ import (
 )
 
 func RestryOnBeforeRequest(c *resty.Client, req *resty.Request) error {
+
+	// Explore response object
+	fmt.Println("Request Info:")
+	fmt.Println("  Status     :", req.Header)
+	fmt.Println("  Proto      :", req.URL)
+	fmt.Println("  Time       :", req.Time)
+	fmt.Println("  Body       :\n", req.Body)
+	fmt.Println("  RawRequest :\n", req.RawRequest)
+	fmt.Println()
+
+	// Explore trace info
+	fmt.Println("Request Trace Info:")
+	ti := req.TraceInfo()
+	fmt.Println("  DNSLookup     :", ti.DNSLookup)
+	fmt.Println("  ConnTime      :", ti.ConnTime)
+	fmt.Println("  TCPConnTime   :", ti.TCPConnTime)
+	fmt.Println("  TLSHandshake  :", ti.TLSHandshake)
+	fmt.Println("  ServerTime    :", ti.ServerTime)
+	fmt.Println("  ResponseTime  :", ti.ResponseTime)
+	fmt.Println("  TotalTime     :", ti.TotalTime)
+	fmt.Println("  IsConnReused  :", ti.IsConnReused)
+	fmt.Println("  IsConnWasIdle :", ti.IsConnWasIdle)
+	fmt.Println("  ConnIdleTime  :", ti.ConnIdleTime)
+	fmt.Println("  RequestAttempt:", ti.RequestAttempt)
+	return nil // if its success otherwise return error
+}
+
+func RestryOnAfterResponse(c *resty.Client, resp *resty.Response) error {
+	// Explore response object
+	fmt.Println("Response Info:")
+	fmt.Println("  Status Code:", resp.StatusCode())
+	fmt.Println("  Status     :", resp.Status())
+	fmt.Println("  Proto      :", resp.Proto())
+	fmt.Println("  Time       :", resp.Time())
+	fmt.Println("  Received At:", resp.ReceivedAt())
+	fmt.Println("  Body       :\n", resp)
+	fmt.Println()
+
+	// Explore trace info
+	fmt.Println("Request Trace Info:")
+	ti := resp.Request.TraceInfo()
+	fmt.Println("  DNSLookup     :", ti.DNSLookup)
+	fmt.Println("  ConnTime      :", ti.ConnTime)
+	fmt.Println("  TCPConnTime   :", ti.TCPConnTime)
+	fmt.Println("  TLSHandshake  :", ti.TLSHandshake)
+	fmt.Println("  ServerTime    :", ti.ServerTime)
+	fmt.Println("  ResponseTime  :", ti.ResponseTime)
+	fmt.Println("  TotalTime     :", ti.TotalTime)
+	fmt.Println("  IsConnReused  :", ti.IsConnReused)
+	fmt.Println("  IsConnWasIdle :", ti.IsConnWasIdle)
+	fmt.Println("  ConnIdleTime  :", ti.ConnIdleTime)
+	fmt.Println("  RequestAttempt:", ti.RequestAttempt)
+	if ti.RemoteAddr != nil {
+		fmt.Println("  RemoteAddr    :", ti.RemoteAddr.String())
+	}
 	return nil // if its success otherwise return error
 }
 
