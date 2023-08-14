@@ -1,0 +1,17 @@
+{
+  "apps": [{
+    "id": "",
+    "name": "monkey",
+    "hostname": "chat.colbt.cc",
+    "role":{
+      "role":    "system",
+      "content": "你是一个智能聊天助手"}
+    },{
+    "id": "",
+    "name": "maas",
+    "hostname": "maasdemo.colbt.cc",
+    "role":{
+      "role":    "system",
+      "content": "你是一个智能销售pitch邮件生成器"}
+  }]
+}

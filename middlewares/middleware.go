@@ -14,62 +14,68 @@ import (
 	"time"
 )
 
-func RestryOnBeforeRequest(c *resty.Client, req *resty.Request) error {
+func RestyOnBeforeRequest(c *resty.Client, req *resty.Request) error {
 
-	// Explore response object
-	fmt.Println("Request Info:")
-	fmt.Println("  Status     :", req.Header)
-	fmt.Println("  Proto      :", req.URL)
-	fmt.Println("  Time       :", req.Time)
-	fmt.Println("  Body       :\n", req.Body)
-	fmt.Println("  RawRequest :\n", req.RawRequest)
-	fmt.Println()
+	entry := log.WithFields(log.Fields{
+		"time":    time.Now().Format(time.RFC3339),
+		"method":  req.Method,
+		"uri":     req.URL,
+		"headers": req.Header,
+		"body":    req,
+	})
+
+	entry.Info("Resty OnBeforeRequest")
 
 	// Explore trace info
-	fmt.Println("Request Trace Info:")
-	ti := req.TraceInfo()
-	fmt.Println("  DNSLookup     :", ti.DNSLookup)
-	fmt.Println("  ConnTime      :", ti.ConnTime)
-	fmt.Println("  TCPConnTime   :", ti.TCPConnTime)
-	fmt.Println("  TLSHandshake  :", ti.TLSHandshake)
-	fmt.Println("  ServerTime    :", ti.ServerTime)
-	fmt.Println("  ResponseTime  :", ti.ResponseTime)
-	fmt.Println("  TotalTime     :", ti.TotalTime)
-	fmt.Println("  IsConnReused  :", ti.IsConnReused)
-	fmt.Println("  IsConnWasIdle :", ti.IsConnWasIdle)
-	fmt.Println("  ConnIdleTime  :", ti.ConnIdleTime)
-	fmt.Println("  RequestAttempt:", ti.RequestAttempt)
+	/*
+		fmt.Println("Request Trace Info:")
+		ti := req.TraceInfo()
+		fmt.Println("  DNSLookup     :", ti.DNSLookup)
+		fmt.Println("  ConnTime      :", ti.ConnTime)
+		fmt.Println("  TCPConnTime   :", ti.TCPConnTime)
+		fmt.Println("  TLSHandshake  :", ti.TLSHandshake)
+		fmt.Println("  ServerTime    :", ti.ServerTime)
+		fmt.Println("  ResponseTime  :", ti.ResponseTime)
+		fmt.Println("  TotalTime     :", ti.TotalTime)
+		fmt.Println("  IsConnReused  :", ti.IsConnReused)
+		fmt.Println("  IsConnWasIdle :", ti.IsConnWasIdle)
+		fmt.Println("  ConnIdleTime  :", ti.ConnIdleTime)
+		fmt.Println("  RequestAttempt:", ti.RequestAttempt)
+	*/
 	return nil // if its success otherwise return error
 }
 
-func RestryOnAfterResponse(c *resty.Client, resp *resty.Response) error {
+func RestyOnAfterResponse(c *resty.Client, resp *resty.Response) error {
 	// Explore response object
-	fmt.Println("Response Info:")
-	fmt.Println("  Status Code:", resp.StatusCode())
-	fmt.Println("  Status     :", resp.Status())
-	fmt.Println("  Proto      :", resp.Proto())
-	fmt.Println("  Time       :", resp.Time())
-	fmt.Println("  Received At:", resp.ReceivedAt())
-	fmt.Println("  Body       :\n", resp)
-	fmt.Println()
+	entry := log.WithFields(log.Fields{
+		"status code": resp.StatusCode(),
+		"time":        time.Now().Format(time.RFC3339),
+		"Status":      resp.Status(),
+		"Proto":       resp.Proto(),
+		"headers":     resp.Header(),
+		"body":        resp,
+	})
+
+	entry.Info("Resty OnBeforeResponse")
 
 	// Explore trace info
-	fmt.Println("Request Trace Info:")
-	ti := resp.Request.TraceInfo()
-	fmt.Println("  DNSLookup     :", ti.DNSLookup)
-	fmt.Println("  ConnTime      :", ti.ConnTime)
-	fmt.Println("  TCPConnTime   :", ti.TCPConnTime)
-	fmt.Println("  TLSHandshake  :", ti.TLSHandshake)
-	fmt.Println("  ServerTime    :", ti.ServerTime)
-	fmt.Println("  ResponseTime  :", ti.ResponseTime)
-	fmt.Println("  TotalTime     :", ti.TotalTime)
-	fmt.Println("  IsConnReused  :", ti.IsConnReused)
-	fmt.Println("  IsConnWasIdle :", ti.IsConnWasIdle)
-	fmt.Println("  ConnIdleTime  :", ti.ConnIdleTime)
-	fmt.Println("  RequestAttempt:", ti.RequestAttempt)
-	if ti.RemoteAddr != nil {
-		fmt.Println("  RemoteAddr    :", ti.RemoteAddr.String())
-	}
+	/*
+		fmt.Println("Request Trace Info:")
+		ti := resp.Request.TraceInfo()
+		fmt.Println("  DNSLookup     :", ti.DNSLookup)
+		fmt.Println("  ConnTime      :", ti.ConnTime)
+		fmt.Println("  TCPConnTime   :", ti.TCPConnTime)
+		fmt.Println("  TLSHandshake  :", ti.TLSHandshake)
+		fmt.Println("  ServerTime    :", ti.ServerTime)
+		fmt.Println("  ResponseTime  :", ti.ResponseTime)
+		fmt.Println("  TotalTime     :", ti.TotalTime)
+		fmt.Println("  IsConnReused  :", ti.IsConnReused)
+		fmt.Println("  IsConnWasIdle :", ti.IsConnWasIdle)
+		fmt.Println("  ConnIdleTime  :", ti.ConnIdleTime)
+		fmt.Println("  RequestAttempt:", ti.RequestAttempt)
+		if ti.RemoteAddr != nil {
+			fmt.Println("  RemoteAddr    :", ti.RemoteAddr.String())
+		}*/
 	return nil // if its success otherwise return error
 }
 
@@ -135,5 +141,12 @@ func ValidateSignatureMiddleware(signingKey []byte) echo.MiddlewareFunc {
 			}
 			return next(c)
 		}
+	}
+}
+
+func AppContextMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		return nil
 	}
 }

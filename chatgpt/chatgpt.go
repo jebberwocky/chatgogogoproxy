@@ -25,8 +25,8 @@ const (
 
 func GenerateResponseLegacy(d models.ChatRequest) (responses.Response, error) {
 	client := resty.New()
-	client.OnBeforeRequest(middlewares.RestryOnBeforeRequest)
-	client.OnAfterResponse(middlewares.RestryOnAfterResponse)
+	client.OnBeforeRequest(middlewares.RestyOnBeforeRequest)
+	client.OnAfterResponse(middlewares.RestyOnAfterResponse)
 	prompt := d.Input
 	resp, err := client.R().
 		SetHeader("Authorization", "Bearer "+apiKey).
@@ -71,8 +71,8 @@ func GenerateResponse(d models.ChatRequest, model string) (responses.Response, e
 		"role":    "user",
 		"content": d.Input})
 	client := resty.New()
-	client.OnBeforeRequest(middlewares.RestryOnBeforeRequest)
-	client.OnAfterResponse(middlewares.RestryOnAfterResponse)
+	client.OnBeforeRequest(middlewares.RestyOnBeforeRequest)
+	client.OnAfterResponse(middlewares.RestyOnAfterResponse)
 	resp, err := client.R().
 		SetHeader("Authorization", "Bearer "+apiKey).
 		SetHeader("Content-Type", "application/json").SetBody(

@@ -46,6 +46,7 @@ func init() {
 		LocalTime: true,
 	}
 	log.SetOutput(io.MultiWriter(os.Stdout, lumberjackLogger))
+
 }
 
 // main() function
