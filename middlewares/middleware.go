@@ -2,18 +2,17 @@ package middlewares
 
 import (
 	"bytes"
-	"chatproxy/models"
+	"chatproxy/appconfigs"
 	"chatproxy/util"
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
-	"io"
-	"time"
-
 	"github.com/go-resty/resty/v2"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
+	"io"
+	"time"
 )
 
 func RestyOnBeforeRequest(c *resty.Client, req *resty.Request) error {
@@ -59,7 +58,6 @@ func RestyOnAfterResponse(c *resty.Client, resp *resty.Response) error {
 	})
 
 	entry.Info("Resty OnBeforeResponse")
-
 	// Explore trace info
 	/*
 		fmt.Println("Request Trace Info:")
@@ -148,9 +146,7 @@ func ValidateSignatureMiddleware(signingKey []byte) echo.MiddlewareFunc {
 
 func AppContextMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx := AppContexts
-		apps := ctx.Value("appconfigs").(models.Apps)
-		fmt.Println(apps)
-		return nil
+		fmt.Println(appconfigs.Appconfigs)
+		return next(c)
 	}
 }

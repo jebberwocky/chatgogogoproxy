@@ -2,11 +2,9 @@ package main
 
 import (
 	"chatproxy/middlewares"
-	"chatproxy/models"
 	"chatproxy/routes"
 	"chatproxy/util"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -52,20 +50,6 @@ func init() {
 		LocalTime: true,
 	}
 	log.SetOutput(io.MultiWriter(os.Stdout, lumberjackLogger))
-	//init app config
-	content, err := os.ReadFile("./appconfigs/apps.json")
-	if err != nil {
-		log.Fatal("Error when opening file: ", err)
-		panic(err)
-	}
-	var val models.Apps
-	if err := json.Unmarshal(content, &val); err != nil {
-		log.Fatal("Error when parsing appconfig file: ", err)
-		panic(err)
-	}
-	fmt.Println(val)
-	ctx := context.Background()
-	AppContexts = context.WithValue(ctx, "appconfigs", val)
 }
 
 // main() function
