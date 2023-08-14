@@ -20,3 +20,7 @@ type AppContext struct {
 		Content string `json:"content"`
 	} `json:"role"`
 }
+
+type Apps struct {
+	Apps []AppContext `json:"apps"`
+}

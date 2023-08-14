@@ -2,16 +2,18 @@ package middlewares
 
 import (
 	"bytes"
+	"chatproxy/models"
 	"chatproxy/util"
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
+	"io"
+	"time"
+
 	"github.com/go-resty/resty/v2"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
-	"io"
-	"time"
 )
 
 func RestyOnBeforeRequest(c *resty.Client, req *resty.Request) error {
@@ -146,7 +148,9 @@ func ValidateSignatureMiddleware(signingKey []byte) echo.MiddlewareFunc {
 
 func AppContextMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-
+		ctx := AppContexts
+		apps := ctx.Value("appconfigs").(models.Apps)
+		fmt.Println(apps)
 		return nil
 	}
 }

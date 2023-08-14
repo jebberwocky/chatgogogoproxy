@@ -2,19 +2,25 @@ package main
 
 import (
 	"chatproxy/middlewares"
+	"chatproxy/models"
 	"chatproxy/routes"
 	"chatproxy/util"
+	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"strings"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"io"
-	"net/http"
-	"os"
-	"strings"
 )
+
+var AppContexts context.Context
 
 // init() function
 // - Called at startup to initialize the application
@@ -46,7 +52,20 @@ func init() {
 		LocalTime: true,
 	}
 	log.SetOutput(io.MultiWriter(os.Stdout, lumberjackLogger))
-
+	//init app config
+	content, err := os.ReadFile("./appconfigs/apps.json")
+	if err != nil {
+		log.Fatal("Error when opening file: ", err)
+		panic(err)
+	}
+	var val models.Apps
+	if err := json.Unmarshal(content, &val); err != nil {
+		log.Fatal("Error when parsing appconfig file: ", err)
+		panic(err)
+	}
+	fmt.Println(val)
+	ctx := context.Background()
+	AppContexts = context.WithValue(ctx, "appconfigs", val)
 }
 
 // main() function
@@ -65,6 +84,7 @@ func main() {
 	//e.Use(middleware.Recover())
 	e.Use(middlewares.LoggingMiddleware)
 	e.Use(middlewares.ServerHeader)
+	e.Use(middlewares.AppContextMiddleware)
 	//Domain White List Functionality
 	if viper.GetBool(util.DomainWhitelistEnable) {
 		configCORS(e)
