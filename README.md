@@ -1,4 +1,4 @@
-# chatgogogoproxy
+# GOGOGOProxy
 
 ## rewrite OpenAI proxy service in Golang
 
@@ -12,7 +12,7 @@ Optimizing
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o echo-server server.go
 ```
 ## app config file
-place apps.json to the root directory as executable
+place apps.json to the root directory as executable.
 ```json
 {
   "apps": [{
