@@ -57,7 +57,7 @@ func RestyOnAfterResponse(c *resty.Client, resp *resty.Response) error {
 		"body":        resp,
 	})
 
-	entry.Info("Resty OnBeforeResponse")
+	entry.Info("Resty OnAfterResponse")
 	// Explore trace info
 	/*
 		fmt.Println("Request Trace Info:")

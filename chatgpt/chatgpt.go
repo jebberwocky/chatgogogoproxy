@@ -52,7 +52,7 @@ func GenerateResponseLegacy(d models.ChatRequest, app models.AppContext) (respon
 			return responses.Response{}, err
 		}
 		// Extract the content from the JSON response
-		content := data["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
+		content := data["choices"].([]interface{})[0].(map[string]interface{})["text"].(string)
 		return responses.Response{
 			Message:         "success",
 			ChatbotResponse: content,
