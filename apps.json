@@ -2,7 +2,8 @@
   "apps": [{
     "id": "",
     "name": "monkey",
-    "hostname": "chat.colbt.cc",
+    "hostname": "colbt.cc:3131",
+    "openai_key": "***REMOVED***",
     "role":{
       "role":    "system",
       "content": "你是一个智能聊天助手"}
@@ -10,6 +11,7 @@
     "id": "",
     "name": "maas",
     "hostname": "maasdemo.colbt.cc",
+    "openai_key": "***REMOVED***",
     "role":{
       "role":    "system",
       "content": "你是一个智能销售pitch邮件生成器"}

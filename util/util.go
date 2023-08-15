@@ -31,6 +31,10 @@ const (
 	LogSize         string = "LOG_SIZE"
 )
 
+const (
+	EchoAppContext string = "APP_ECHO_CONTEXT"
+)
+
 func GetQuery(d interface{}, key string) string {
 	v := reflect.ValueOf(d)
 	t := v.Type()

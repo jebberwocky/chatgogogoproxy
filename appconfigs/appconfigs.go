@@ -23,3 +23,13 @@ func init() {
 	}
 	Appconfigs = val
 }
+
+func GetContextByHost(host string) models.AppContext {
+	for i := range Appconfigs.Apps {
+		appc := Appconfigs.Apps[i]
+		if appc.Hostname == host {
+			return appc
+		}
+	}
+	return Appconfigs.Apps[0] //return default
+}

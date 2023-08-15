@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	apiKey             = "***REMOVED***"
+	//apiKey             = "***REMOVED***"
 	apiEndpoint_legacy = "https://api.openai.com/v1/completions"
 	apiEndpoint        = "https://api.openai.com/v1/chat/completions"
 	max_token          = 2048
@@ -23,13 +23,13 @@ const (
 	Model_v4           = "gpt-4"
 )
 
-func GenerateResponseLegacy(d models.ChatRequest) (responses.Response, error) {
+func GenerateResponseLegacy(d models.ChatRequest, app models.AppContext) (responses.Response, error) {
 	client := resty.New()
 	client.OnBeforeRequest(middlewares.RestyOnBeforeRequest)
 	client.OnAfterResponse(middlewares.RestyOnAfterResponse)
 	prompt := d.Input
 	resp, err := client.R().
-		SetHeader("Authorization", "Bearer "+apiKey).
+		SetHeader("Authorization", "Bearer "+app.OpenaiApikey).
 		SetHeader("Content-Type", "application/json").SetBody(
 		map[string]interface{}{
 			"model":       Model_davinci,
@@ -60,12 +60,12 @@ func GenerateResponseLegacy(d models.ChatRequest) (responses.Response, error) {
 	}
 }
 
-func GenerateResponse(d models.ChatRequest, model string) (responses.Response, error) {
+func GenerateResponse(d models.ChatRequest, app models.AppContext, model string) (responses.Response, error) {
 	pk := d.ATag.Pk
 	if model == Model_v4 {
 		chatHistory.SetRule(pk, map[string]interface{}{
-			"role":    "system",
-			"content": "你是一个智能聊天助手"})
+			"role":    app.Role.Role,
+			"content": app.Role.Content})
 	}
 	messages := chatHistory.Set(pk, map[string]interface{}{
 		"role":    "user",
@@ -74,7 +74,7 @@ func GenerateResponse(d models.ChatRequest, model string) (responses.Response, e
 	client.OnBeforeRequest(middlewares.RestyOnBeforeRequest)
 	client.OnAfterResponse(middlewares.RestyOnAfterResponse)
 	resp, err := client.R().
-		SetHeader("Authorization", "Bearer "+apiKey).
+		SetHeader("Authorization", "Bearer "+app.OpenaiApikey).
 		SetHeader("Content-Type", "application/json").SetBody(
 		map[string]interface{}{
 			"model":       model,

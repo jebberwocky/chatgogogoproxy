@@ -146,7 +146,8 @@ func ValidateSignatureMiddleware(signingKey []byte) echo.MiddlewareFunc {
 
 func AppContextMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		fmt.Println(appconfigs.Appconfigs)
+		ac := appconfigs.GetContextByHost(c.Request().Host)
+		c.Set(util.EchoAppContext, ac)
 		return next(c)
 	}
 }
