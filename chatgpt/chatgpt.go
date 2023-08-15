@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	//apiKey             = "***REMOVED***"
+	//apiKey             = "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"
 	apiEndpoint_legacy = "https://api.openai.com/v1/completions"
 	apiEndpoint        = "https://api.openai.com/v1/chat/completions"
 	max_token          = 2048
