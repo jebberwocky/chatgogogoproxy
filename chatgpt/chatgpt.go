@@ -12,16 +12,21 @@ import (
 
 const (
 	//apiKey             = "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"
-	apiEndpoint_legacy = "https://api.openai.com/v1/completions"
-	apiEndpoint        = "https://api.openai.com/v1/chat/completions"
-	max_token          = 2048
-	temperature        = 0.9
-	top_p              = 1
-	n                  = 1
-	Model_davinci      = "text-davinci-003"
-	Model_v3           = "gpt-3.5-turbo"
-	Model_v4           = "gpt-4"
+	apiEndpoint_legacy  = "https://api.openai.com/v1/completions"
+	apiEndpoint         = "https://api.openai.com/v1/chat/completions"
+	max_token           = 2048
+	temperature         = 0.9
+	top_p               = 1
+	n                   = 1
+	Model_davinci       = "text-davinci-003"
+	Model_v3            = "gpt-3.5-turbo"
+	Model_v4            = "gpt-4"
+	Model_self_training = "model_self_training"
 )
+
+func getSelfTrainModel(app models.AppContext) string {
+	return "ft:gpt-3.5-turbo-0613:speaknoevil::7rMcCRYr"
+}
 
 func GenerateResponseLegacy(d models.ChatRequest, app models.AppContext) (responses.Response, error) {
 	client := resty.New()
@@ -45,6 +50,7 @@ func GenerateResponseLegacy(d models.ChatRequest, app models.AppContext) (respon
 		return responses.Response{}, err
 	} else {
 		body := resp.Body()
+		fmt.Println(resp)
 		var data map[string]interface{}
 		err = json.Unmarshal(body, &data)
 		if err != nil {
@@ -52,6 +58,12 @@ func GenerateResponseLegacy(d models.ChatRequest, app models.AppContext) (respon
 			return responses.Response{}, err
 		}
 		// Extract the content from the JSON response
+		if _, ok := data["error"]; ok {
+			return responses.Response{
+				Message:         "fail",
+				ChatbotResponse: data["error"].(map[string]interface{})["message"].(string),
+			}, nil
+		}
 		content := data["choices"].([]interface{})[0].(map[string]interface{})["text"].(string)
 		return responses.Response{
 			Message:         "success",
@@ -66,6 +78,12 @@ func GenerateResponse(d models.ChatRequest, app models.AppContext, model string)
 		chatHistory.SetRule(pk, map[string]interface{}{
 			"role":    app.Role.Role,
 			"content": app.Role.Content})
+	}
+	if model == Model_self_training {
+		chatHistory.SetRule(pk, map[string]interface{}{
+			"role":    app.Role.Role,
+			"content": app.Role.Content})
+		model = getSelfTrainModel(app)
 	}
 	messages := chatHistory.Set(pk, map[string]interface{}{
 		"role":    "user",
@@ -95,6 +113,12 @@ func GenerateResponse(d models.ChatRequest, app models.AppContext, model string)
 		if err != nil {
 			fmt.Println("Error while decoding JSON response:", err)
 			return responses.Response{}, err
+		}
+		if _, ok := data["error"]; ok {
+			return responses.Response{
+				Message:         "fail",
+				ChatbotResponse: data["error"].(map[string]interface{})["message"].(string),
+			}, nil
 		}
 		// Extract the content from the JSON response
 		content := data["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)

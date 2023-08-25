@@ -7,7 +7,9 @@ import (
 )
 
 func DefaultHandle(d models.ChatRequest, a models.AppContext) (responses.Response, error) {
-	resp, err := chatgpt.GenerateResponseLegacy(d, a)
+	//resp, err := chatgpt.GenerateResponseLegacy(d, a)
+	//08/25/2023 using finetune over td3
+	resp, err := chatgpt.GenerateResponse(d, a, chatgpt.Model_self_training)
 	return resp, err
 }
 
@@ -18,5 +20,10 @@ func V3Handle(d models.ChatRequest, a models.AppContext) (responses.Response, er
 
 func V4Handle(d models.ChatRequest, a models.AppContext) (responses.Response, error) {
 	resp, err := chatgpt.GenerateResponse(d, a, chatgpt.Model_v4)
+	return resp, err
+}
+
+func VFineHandle(d models.ChatRequest, a models.AppContext) (responses.Response, error) {
+	resp, err := chatgpt.GenerateResponse(d, a, chatgpt.Model_self_training)
 	return resp, err
 }

@@ -16,6 +16,7 @@ type AppContext struct {
 	Key          string `json:"key"`
 	Path         string `json:"path"`
 	OpenaiApikey string `json:"openai_key"`
+	OrgId        string `json:"org_id"`
 	Role         struct {
 		Role    string `json:"role"`
 		Content string `json:"content"`
