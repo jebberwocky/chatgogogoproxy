@@ -1,4 +1,4 @@
-# GOGOGOProxy
+# ChatProxy
 
 ## rewrite OpenAI proxy service in Golang
 
@@ -35,3 +35,16 @@ place apps.json to the root directory as executable.
 }
 
 ```
+
+## .env
+```
+PORT=3301
+ENVIRONMENT=DEV
+LOG_FILEPATH=logs/service.log
+LOG_SIZE=1
+DOMAIN_WHITELIST_ENABLE=true
+DOMAIN_WHITELISTS=*
+```
+
+## Docker Ready
+https://hub.docker.com/repository/docker/themonkey0220/docker-chat-proxy/general
