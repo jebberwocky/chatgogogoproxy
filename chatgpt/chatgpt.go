@@ -14,6 +14,7 @@ const (
 	//apiKey             = "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"
 	apiEndpoint_legacy  = "https://api.openai.com/v1/completions"
 	apiEndpoint         = "https://api.openai.com/v1/chat/completions"
+	apiEndpoint_Image   = "https://api.openai.com/v1/images/generations" //api.openai.com/v1/images/generations
 	max_token           = 2048
 	temperature         = 0.9
 	top_p               = 1
@@ -22,6 +23,8 @@ const (
 	Model_v3            = "gpt-3.5-turbo"
 	Model_v4            = "gpt-4"
 	Model_self_training = "model_self_training"
+	Model_dall_e_3      = "dall-e-3"
+	image_size          = "1024x1024"
 )
 
 func getSelfTrainModel(app models.AppContext) string {
@@ -127,6 +130,49 @@ func GenerateResponse(d models.ChatRequest, app models.AppContext, model string)
 			"content": content})
 		return responses.Response{
 			Message:         "success",
+			ChatbotResponse: content,
+		}, nil
+	}
+}
+
+func GenerateImage(d models.ChatRequest, app models.AppContext, model string) (responses.Response, error) {
+	client := resty.New()
+	client.OnBeforeRequest(middlewares.RestyOnBeforeRequest)
+	client.OnAfterResponse(middlewares.RestyOnAfterResponse)
+	resp, err := client.R().
+		SetHeader("Authorization", "Bearer "+app.OpenaiApikey).
+		SetHeader("Content-Type", "application/json").SetBody(
+		map[string]interface{}{
+			"model":  model,
+			"prompt": d.Input,
+			"n":      n,
+			"size":   image_size,
+		}).
+		Post(apiEndpoint_Image)
+
+	if err != nil {
+		return responses.Response{}, err
+	} else {
+		body := resp.Body()
+		var data map[string]interface{}
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			fmt.Println("Error while decoding JSON response:", err)
+			return responses.Response{}, err
+		}
+		if _, ok := data["error"]; ok {
+			return responses.Response{
+				Message:         "fail",
+				ChatbotResponse: data["error"].(map[string]interface{})["message"].(string),
+			}, nil
+		}
+		// Extract the content from the JSON response
+		url := data["data"].([]interface{})[0].(map[string]interface{})["url"].(string)
+		//revised_prompt := data["data"].([]interface{})[0].(map[string]interface{})["revised_prompt"].(string)
+		content := fmt.Sprintf("<img src='%s'/>", url)
+		return responses.Response{
+			Message:         "success",
+			Data:            data,
 			ChatbotResponse: content,
 		}, nil
 	}

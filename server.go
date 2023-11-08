@@ -21,8 +21,8 @@ import (
 var AppContexts context.Context
 
 // init() function
-// - Called at startup to initialize the application
-// - Loads config from .env file using viper
+// - Called at startup- Loads config from .env file using viper to initialize the application
+//
 // - Configures logging using logrus
 // - Sets log level from LOG_LEVEL environment var
 // - Log rotation with lumberjack

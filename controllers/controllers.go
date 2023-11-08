@@ -27,3 +27,8 @@ func VFineHandle(d models.ChatRequest, a models.AppContext) (responses.Response,
 	resp, err := chatgpt.GenerateResponse(d, a, chatgpt.Model_self_training)
 	return resp, err
 }
+
+func DalleHandle(d models.ChatRequest, a models.AppContext) (responses.Response, error) {
+	resp, err := chatgpt.GenerateImage(d, a, chatgpt.Model_dall_e_3)
+	return resp, err
+}
