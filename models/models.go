@@ -1,5 +1,10 @@
 package models
 
+type ChatContent struct {
+	Type    string `json:"type"`
+	Content string `json:"content"`
+}
+
 type ChatRequest struct {
 	Input string `json:"input"`
 	ATag  struct {
@@ -7,6 +12,7 @@ type ChatRequest struct {
 		Mk string `json:"mk"`
 		Mh string `json:"mh"`
 	} `json:"atag"`
+	ChatContent []ChatContent `json:"chatContent"`
 }
 
 type AppContext struct {
@@ -17,6 +23,7 @@ type AppContext struct {
 	Path         string `json:"path"`
 	OpenaiApikey string `json:"openai_key"`
 	OrgId        string `json:"org_id"`
+	ImgProxyUrl  string `json:"img_proxy_url"`
 	Role         struct {
 		Role    string `json:"role"`
 		Content string `json:"content"`

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
+	"net/url"
 )
 
 const (
@@ -24,6 +25,7 @@ const (
 	Model_v4            = "gpt-4"
 	Model_self_training = "model_self_training"
 	Model_dall_e_3      = "dall-e-3"
+	Model_v4_vision     = "gpt-4-vision-preview"
 	image_size          = "1024x1024"
 )
 
@@ -167,9 +169,12 @@ func GenerateImage(d models.ChatRequest, app models.AppContext, model string) (r
 			}, nil
 		}
 		// Extract the content from the JSON response
-		url := data["data"].([]interface{})[0].(map[string]interface{})["url"].(string)
+		_url := data["data"].([]interface{})[0].(map[string]interface{})["url"].(string)
 		//revised_prompt := data["data"].([]interface{})[0].(map[string]interface{})["revised_prompt"].(string)
-		content := fmt.Sprintf("<img src='%s'/>", url)
+		content := fmt.Sprintf("<img src='%s'/>", _url)
+		if len(app.ImgProxyUrl) > 0 {
+			content = fmt.Sprintf("<img src='%s?url=%s&mh=%s'/>", app.ImgProxyUrl, url.QueryEscape(_url), d.ATag.Mh)
+		}
 		return responses.Response{
 			Message:         "success",
 			Data:            data,
