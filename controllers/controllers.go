@@ -32,3 +32,8 @@ func DalleHandle(d models.ChatRequest, a models.AppContext) (responses.Response,
 	resp, err := chatgpt.GenerateImage(d, a, chatgpt.Model_dall_e_3)
 	return resp, err
 }
+
+func VisionHandle(d models.ChatRequest, a models.AppContext) (responses.Response, error) {
+	resp, err := chatgpt.GenerateVision(d, a)
+	return resp, err
+}

@@ -1,8 +1,14 @@
 package models
 
 type ChatContent struct {
-	Type    string `json:"type"`
-	Content string `json:"content"`
+	Role    string `json:"role"`
+	Content []struct {
+		Type   string `json:"type"`
+		Text   string `json:"text"`
+		ImgUrl struct {
+			Url string `json:"url"`
+		} `json:"image_url"`
+	} `json:"content"`
 }
 
 type ChatRequest struct {
@@ -12,7 +18,7 @@ type ChatRequest struct {
 		Mk string `json:"mk"`
 		Mh string `json:"mh"`
 	} `json:"atag"`
-	ChatContent []ChatContent `json:"chatContent"`
+	ChatContents []ChatContent `json:"contents"`
 }
 
 type AppContext struct {

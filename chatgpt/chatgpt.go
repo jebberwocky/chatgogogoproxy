@@ -5,6 +5,7 @@ import (
 	"chatproxy/middlewares"
 	"chatproxy/models"
 	responses "chatproxy/response"
+	"chatproxy/util"
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
@@ -149,6 +150,67 @@ func GenerateImage(d models.ChatRequest, app models.AppContext, model string) (r
 			"prompt": d.Input,
 			"n":      n,
 			"size":   image_size,
+		}).
+		Post(apiEndpoint_Image)
+
+	if err != nil {
+		return responses.Response{}, err
+	} else {
+		body := resp.Body()
+		var data map[string]interface{}
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			fmt.Println("Error while decoding JSON response:", err)
+			return responses.Response{}, err
+		}
+		if _, ok := data["error"]; ok {
+			return responses.Response{
+				Message:         "fail",
+				ChatbotResponse: data["error"].(map[string]interface{})["message"].(string),
+			}, nil
+		}
+		// Extract the content from the JSON response
+		_url := data["data"].([]interface{})[0].(map[string]interface{})["url"].(string)
+		//revised_prompt := data["data"].([]interface{})[0].(map[string]interface{})["revised_prompt"].(string)
+		content := fmt.Sprintf("<img src='%s'/>", _url)
+		if len(app.ImgProxyUrl) > 0 {
+			content = fmt.Sprintf("<img src='%s?url=%s&mh=%s'/>", app.ImgProxyUrl, url.QueryEscape(_url), d.ATag.Mh)
+		}
+		return responses.Response{
+			Message:         "success",
+			Data:            data,
+			ChatbotResponse: content,
+		}, nil
+	}
+}
+
+func GenerateVision(d models.ChatRequest, app models.AppContext) (responses.Response, error) {
+	client := resty.New()
+	client.OnBeforeRequest(middlewares.RestyOnBeforeRequest)
+	client.OnAfterResponse(middlewares.RestyOnAfterResponse)
+	resp, err := client.R().
+		SetHeader("Authorization", "Bearer "+app.OpenaiApikey).
+		SetHeader("Content-Type", "application/json").SetBody(
+		map[string]interface{}{
+			"model": Model_v4_vision,
+			"messages": []interface{}{
+				map[string]interface{}{
+					"role": "user",
+					"content": []interface{}{
+						map[string]interface{}{
+							"type": "text",
+							"text": util.FindInChatContent(d.ChatContents[0], "text"),
+						},
+						map[string]interface{}{
+							"type": "image_url",
+							"image_url": map[string]interface{}{
+								"url": util.FindInChatContent(d.ChatContents[0], "image_url"),
+							},
+						},
+					},
+				},
+			},
+			"max_tokens": 300,
 		}).
 		Post(apiEndpoint_Image)
 

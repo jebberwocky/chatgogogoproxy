@@ -1,6 +1,7 @@
 package util
 
 import (
+	"chatproxy/models"
 	"fmt"
 	"net/url"
 	"reflect"
@@ -49,4 +50,17 @@ func GetQuery(d interface{}, key string) string {
 		parts = append(parts, part)
 	}
 	return strings.Join(parts, "&")
+}
+
+func FindInChatContent(c models.ChatContent, key string) string {
+	for _, content := range c.Content {
+		if content.Type == key {
+			if key == "image_url" {
+				return content.ImgUrl.Url
+			} else {
+				return content.Text
+			}
+		}
+	}
+	return ""
 }

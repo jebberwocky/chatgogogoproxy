@@ -17,6 +17,7 @@ func ChatRoute(e *echo.Echo) {
 	g.POST("/newmonkey", v3Handler)
 	g.POST("/finetune", vFineHandler)
 	g.POST("/dalle", dalleHandler)
+	g.POST("/vision", visionHandler)
 	g.POST("*", defaultHandler)
 }
 
@@ -32,6 +33,24 @@ func defaultHandler(c echo.Context) error {
 		return responses.SendError(c, http.StatusBadRequest, err.Error())
 	}
 	if resp, err := controllers.DefaultHandle(req, app); err != nil {
+		return responses.SendError(c, http.StatusBadRequest, err.Error())
+	} else {
+		return responses.SendSuccessObj(c, resp)
+	}
+}
+
+func visionHandler(c echo.Context) error {
+	var req models.ChatRequest
+	err := c.Bind(&req)
+	if err != nil {
+		return c.String(http.StatusBadRequest, "bad request")
+	}
+	app := c.Get(util.EchoAppContext).(models.AppContext)
+	// Validate
+	if err := validators.ValidateChatRequest(&req); err != nil {
+		return responses.SendError(c, http.StatusBadRequest, err.Error())
+	}
+	if resp, err := controllers.VisionHandle(req, app); err != nil {
 		return responses.SendError(c, http.StatusBadRequest, err.Error())
 	} else {
 		return responses.SendSuccessObj(c, resp)
