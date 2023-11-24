@@ -47,7 +47,7 @@ func visionHandler(c echo.Context) error {
 	}
 	app := c.Get(util.EchoAppContext).(models.AppContext)
 	// Validate
-	if err := validators.ValidateChatRequest(&req); err != nil {
+	if err := validators.ValidateVisionRequest(&req); err != nil {
 		return responses.SendError(c, http.StatusBadRequest, err.Error())
 	}
 	if resp, err := controllers.VisionHandle(req, app); err != nil {

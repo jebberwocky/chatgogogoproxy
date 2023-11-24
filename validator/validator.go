@@ -1,6 +1,7 @@
 package validators
 
 import (
+	"chatproxy/models"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"strings"
@@ -15,6 +16,19 @@ func init() {
 func ValidateChatRequest(obj interface{}) error {
 	return validateDefault(obj)
 }
+
+func ValidateVisionRequest(obj interface{}) error {
+	err := validateDefault(obj)
+	if err == nil {
+		cr := obj.(models.ChatRequest)
+		if len(cr.ChatContents) <= 0 {
+			return fmt.Errorf("contents should not be empty")
+		}
+		//more validation here
+	}
+	return nil
+}
+
 func validateDefault(obj interface{}) error {
 	err := Validate.Struct(obj)
 	if err != nil {

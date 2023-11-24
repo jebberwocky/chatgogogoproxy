@@ -212,7 +212,7 @@ func GenerateVision(d models.ChatRequest, app models.AppContext) (responses.Resp
 			},
 			"max_tokens": 300,
 		}).
-		Post(apiEndpoint_Image)
+		Post(apiEndpoint)
 
 	if err != nil {
 		return responses.Response{}, err
@@ -231,15 +231,9 @@ func GenerateVision(d models.ChatRequest, app models.AppContext) (responses.Resp
 			}, nil
 		}
 		// Extract the content from the JSON response
-		_url := data["data"].([]interface{})[0].(map[string]interface{})["url"].(string)
-		//revised_prompt := data["data"].([]interface{})[0].(map[string]interface{})["revised_prompt"].(string)
-		content := fmt.Sprintf("<img src='%s'/>", _url)
-		if len(app.ImgProxyUrl) > 0 {
-			content = fmt.Sprintf("<img src='%s?url=%s&mh=%s'/>", app.ImgProxyUrl, url.QueryEscape(_url), d.ATag.Mh)
-		}
+		content := data["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
 		return responses.Response{
 			Message:         "success",
-			Data:            data,
 			ChatbotResponse: content,
 		}, nil
 	}
