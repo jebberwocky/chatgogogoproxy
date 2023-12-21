@@ -18,7 +18,7 @@ const (
 	apiEndpoint_legacy          = "https://api.openai.com/v1/completions"
 	apiEndpoint                 = "https://api.openai.com/v1/chat/completions"
 	apiEndpoint_Image           = "https://api.openai.com/v1/images/generations" //api.openai.com/v1/images/generations
-	apiEndpoint_Image_Variation = " https://api.openai.com/v1/images/variations"
+	apiEndpoint_Image_Variation = "https://api.openai.com/v1/images/variations"
 	max_token                   = 2048
 	temperature                 = 0.9
 	top_p                       = 1
