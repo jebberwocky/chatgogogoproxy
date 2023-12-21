@@ -9,25 +9,27 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
+	"github.com/spf13/viper"
 	"net/url"
 )
 
 const (
 	//apiKey             = "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"
-	apiEndpoint_legacy  = "https://api.openai.com/v1/completions"
-	apiEndpoint         = "https://api.openai.com/v1/chat/completions"
-	apiEndpoint_Image   = "https://api.openai.com/v1/images/generations" //api.openai.com/v1/images/generations
-	max_token           = 2048
-	temperature         = 0.9
-	top_p               = 1
-	n                   = 1
-	Model_davinci       = "text-davinci-003"
-	Model_v3            = "gpt-3.5-turbo"
-	Model_v4            = "gpt-4"
-	Model_self_training = "model_self_training"
-	Model_dall_e_3      = "dall-e-3"
-	Model_v4_vision     = "gpt-4-vision-preview"
-	image_size          = "1024x1024"
+	apiEndpoint_legacy          = "https://api.openai.com/v1/completions"
+	apiEndpoint                 = "https://api.openai.com/v1/chat/completions"
+	apiEndpoint_Image           = "https://api.openai.com/v1/images/generations" //api.openai.com/v1/images/generations
+	apiEndpoint_Image_Variation = " https://api.openai.com/v1/images/variations"
+	max_token                   = 2048
+	temperature                 = 0.9
+	top_p                       = 1
+	n                           = 1
+	Model_davinci               = "text-davinci-003"
+	Model_v3                    = "gpt-3.5-turbo"
+	Model_v4                    = "gpt-4"
+	Model_self_training         = "model_self_training"
+	Model_dall_e_3              = "dall-e-3"
+	Model_v4_vision             = "gpt-4-vision-preview"
+	image_size                  = "1024x1024"
 )
 
 func getSelfTrainModel(app models.AppContext) string {
@@ -182,6 +184,54 @@ func GenerateImage(d models.ChatRequest, app models.AppContext, model string) (r
 			ChatbotResponse: content,
 		}, nil
 	}
+}
+
+func GenerateImageVariations(d models.ChatRequest, app models.AppContext) (responses.Response, error) {
+	client := resty.New()
+	client.OnBeforeRequest(middlewares.RestyOnBeforeRequest)
+	client.OnAfterResponse(middlewares.RestyOnAfterResponse)
+	var userImgDir = viper.GetString(util.UserUploadImgDir)
+	var filename = d.Input
+	resp, err := client.R().
+		SetHeader("Authorization", "Bearer "+app.OpenaiApikey).
+		SetFile("image", userImgDir+"/"+filename).
+		Post(apiEndpoint_Image_Variation)
+
+	if err != nil {
+		return responses.Response{}, err
+	} else {
+		body := resp.Body()
+		var data map[string]interface{}
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			fmt.Println("Error while decoding JSON response:", err)
+			return responses.Response{}, err
+		}
+		if _, ok := data["error"]; ok {
+			return responses.Response{
+				Message:         "fail",
+				ChatbotResponse: data["error"].(map[string]interface{})["message"].(string),
+			}, nil
+		}
+		// Extract the content from the JSON response
+		var arr = data["data"].([]interface{})
+		var resultcontent = ""
+		for _, el := range arr {
+			print(el)
+			_url := el.(map[string]interface{})["url"].(string)
+			if len(app.ImgProxyUrl) > 0 {
+				resultcontent = fmt.Sprintf("<img src='%s?url=%s&mh=%s'/>", app.ImgProxyUrl, url.QueryEscape(_url), d.ATag.Mh)
+			} else {
+				resultcontent += fmt.Sprintf("<img src='%s'/>", _url)
+			}
+		}
+		return responses.Response{
+			Message:         "success",
+			Data:            data,
+			ChatbotResponse: resultcontent,
+		}, nil
+	}
+
 }
 
 func GenerateVision(d models.ChatRequest, app models.AppContext) (responses.Response, error) {

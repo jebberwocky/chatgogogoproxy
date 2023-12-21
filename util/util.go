@@ -21,6 +21,7 @@ const (
 	DomainWhitelistValues   string = "DOMAIN_WHITELISTS"
 	DomainWhiteListAllowAll string = "*"
 	ServerPort              string = "PORT"
+	UserUploadImgDir        string = "USER_UPLOAD_IMG_DIR"
 )
 
 const (

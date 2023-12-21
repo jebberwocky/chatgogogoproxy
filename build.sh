@@ -36,7 +36,7 @@ info "Copying executable to server"
 scp ./${APP} root@whereyogi.com:/mnt/volume_nyc1_01/new_chatproxy
 info "remove local build"
 rm ./${APP}
-info "Copying .env to server"
-scp ./.env root@whereyogi.com:/mnt/volume_nyc1_01/new_chatproxy
+info "Copying .env.production to server .env"
+scp ./.env.production root@whereyogi.com:/mnt/volume_nyc1_01/new_chatproxy/.env
 info "Copying apps.json to server"
 scp ./apps.json root@whereyogi.com:/mnt/volume_nyc1_01/new_chatproxy

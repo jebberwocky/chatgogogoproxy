@@ -37,3 +37,8 @@ func VisionHandle(d models.ChatRequest, a models.AppContext) (responses.Response
 	resp, err := chatgpt.GenerateVision(d, a)
 	return resp, err
 }
+
+func VariationHandle(d models.ChatRequest, a models.AppContext) (responses.Response, error) {
+	resp, err := chatgpt.GenerateImageVariations(d, a)
+	return resp, err
+}
